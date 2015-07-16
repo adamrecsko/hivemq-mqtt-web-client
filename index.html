@@ -37,7 +37,6 @@ limitations under the License.
 
 <div id="header">
     <div>
-        <a href="http://www.hivemq.com"><img id="headerlogo" src="assets/logo.png"></a>
         <span id="headertitle">Websockets Client Showcase</span>
     </div>
 </div>
@@ -63,12 +62,12 @@ limitations under the License.
                 <form class="custom">
                     <div class="large-5 columns">
                         <label>Host *</label>
-                        <input id="urlInput" type="text" value="broker.mqttdashboard.com">
+                        <input id="urlInput" type="text" value="">
                     </div>
 
                     <div class="large-1 columns">
                         <label>Port *</label>
-                        <input id="portInput" type="text" value="8000"/>
+                        <input id="portInput" type="text" value=""/>
                     </div>
 
                     <div class="large-4 columns">
@@ -107,8 +106,7 @@ limitations under the License.
 
                     <div class="large-2 columns">
                         <label>Clean Session</label>
-                        <input class="checky" id="cleanSessionInput" type="checkbox" checked="checked"
-                               disabled="disabled"/>
+                        <input class="checky" id="cleanSessionInput" type="checkbox" />
                     </div>
 
                     <div class="large-8 columns">
@@ -319,7 +317,7 @@ limitations under the License.
 
         $('#urlInput').val(websocketserver);
         $('#portInput').val(websocketport);
-        $('#clientIdInput').val('clientId-' + randomString(10));
+        $('#clientIdInput').val();
 
         $('#colorChooser').minicolors();
 

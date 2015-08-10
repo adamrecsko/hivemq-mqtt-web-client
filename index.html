@@ -101,12 +101,12 @@ limitations under the License.
 
                     <div class="large-1 columns">
                         <label>SSL</label>
-                        <input id="sslInput" type="checkbox"/>
+                        <input id="sslInput" type="checkbox" checked/>
                     </div>
 
                     <div class="large-2 columns">
                         <label>Clean Session</label>
-                        <input class="checky" id="cleanSessionInput" type="checkbox" />
+                        <input class="checky" id="cleanSessionInput" type="checkbox" checked />
                     </div>
 
                     <div class="large-8 columns">
@@ -176,6 +176,13 @@ limitations under the License.
                             <div class="large-2 columns">
                                 <a class="small button" id="publishButton"
                                    onclick="websocketclient.publish($('#publishTopic').val(),$('#publishPayload').val(),parseInt($('#publishQoSInput').val(),10),$('#publishRetain').is(':checked'))">Publish</a>
+                                <input type="number" id="interval" value="10000" />
+                                <a class="small button"
+                                   onclick="websocketclient.startSending()">Start sending</a>
+
+                                <a class="small button"
+                                   onclick="websocketclient.stopSending()">Stop sending</a>
+
                             </div>
                         </div>
                         <div class="row">
@@ -314,11 +321,6 @@ limitations under the License.
 
     $(document).foundation();
     $(document).ready(function () {
-
-        $('#urlInput').val(websocketserver);
-        $('#portInput').val(websocketport);
-        $('#clientIdInput').val();
-
         $('#colorChooser').minicolors();
 
         $("#addSubButton").fancybox({

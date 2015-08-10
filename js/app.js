@@ -15,6 +15,8 @@
  *
  * @author: Christoph Schäbel
  */
+var connectionObject = {};
+
 
 var websocketclient = {
     'client': null,
@@ -24,7 +26,32 @@ var websocketclient = {
     'messages': [],
     'connected': false,
 
+
+    'startSending': function () {
+        websocketclient.sendInterval = setInterval(function () {
+            var payload = JSON.parse($('#publishPayload').val());
+            payload.data.timestamp = new Date().getTime();
+            payload.data.message = payload.data.message + ' ' + new Date().getTime();
+            payload = JSON.stringify(payload);
+            console.log('message sent');
+            websocketclient.publish($('#publishTopic').val(), payload, parseInt($('#publishQoSInput').val(), 10), $('#publishRetain').is(':checked'))
+        }, $('#interval').val());
+    },
+    'stopSending': function () {
+        clearInterval(websocketclient.sendInterval);
+    },
+
+    'init': function () {
+        connectionObject = JSON.parse(localStorage.getItem('connectionObject')) || {};
+        $('#urlInput').val(connectionObject.host);
+        $('#portInput').val(connectionObject.port);
+        $('#clientIdInput').val(connectionObject.clientId);
+        $('#userInput').val(connectionObject.username);
+        $('#pwInput').val(connectionObject.password);
+    },
+
     'connect': function () {
+
 
         var host = $('#urlInput').val();
         var port = parseInt($('#portInput').val(), 10);
@@ -39,7 +66,15 @@ var websocketclient = {
         var lwMessage = $('#LWMInput').val();
         var ssl = $('#sslInput').is(':checked');
 
-        this.client = new Paho.MQTT.Client(host, port,'/', clientId);
+        connectionObject.host = host;
+        connectionObject.port = port;
+        connectionObject.clientId = clientId;
+        connectionObject.username = username;
+        connectionObject.password = password;
+
+        localStorage.setItem('connectionObject', JSON.stringify(connectionObject));
+
+        this.client = new Paho.MQTT.Client(host, port, '/', clientId);
         this.client.onConnectionLost = this.onConnectionLost;
         this.client.onMessageArrived = this.onMessageArrived;
 
@@ -157,7 +192,7 @@ var websocketclient = {
             return false;
         }
 
-        if (_.find(this.subscriptions, { 'topic': topic })) {
+        if (_.find(this.subscriptions, {'topic': topic})) {
             websocketclient.render.showError('You are already subscribed to this topic');
             return false;
         }
@@ -220,7 +255,7 @@ var websocketclient = {
                 return '99999';
             }
 
-            var sub = _.find(this.subscriptions, { 'id': id });
+            var sub = _.find(this.subscriptions, {'id': id});
             if (!sub) {
                 return '999999';
             } else {
@@ -284,16 +319,16 @@ var websocketclient = {
             var largest = websocketclient.lastSubId++;
             $("#innerEdit").append(
                 '<li class="subLine" id="sub' + largest + '">' +
-                    '   <div class="row large-12 subs' + largest + '" style="border-left: solid 10px #' + subscription.color + '; background-color: #ffffff">' +
-                    '       <div class="large-12 columns subText">' +
-                    '           <div class="large-1 columns right closer">' +
-                    '              <a href="#" onclick="websocketclient.deleteSubscription(' + largest + '); return false;">x</a>' +
-                    '           </div>' +
-                    '           <div class="qos">Qos: ' + subscription.qos + '</div>' +
-                    '           <div class="topic truncate" id="topic' + largest + '" title="' + Encoder.htmlEncode(subscription.topic, 0) + '">' + Encoder.htmlEncode(subscription.topic) + '</div>' +
-                    '       </div>' +
-                    '   </div>' +
-                    '</li>');
+                '   <div class="row large-12 subs' + largest + '" style="border-left: solid 10px #' + subscription.color + '; background-color: #ffffff">' +
+                '       <div class="large-12 columns subText">' +
+                '           <div class="large-1 columns right closer">' +
+                '              <a href="#" onclick="websocketclient.deleteSubscription(' + largest + '); return false;">x</a>' +
+                '           </div>' +
+                '           <div class="qos">Qos: ' + subscription.qos + '</div>' +
+                '           <div class="topic truncate" id="topic' + largest + '" title="' + Encoder.htmlEncode(subscription.topic, 0) + '">' + Encoder.htmlEncode(subscription.topic) + '</div>' +
+                '       </div>' +
+                '   </div>' +
+                '</li>');
             return largest;
         },
 
@@ -341,3 +376,5 @@ var websocketclient = {
         }
     }
 };
+
+websocketclient.init();
